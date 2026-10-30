@@ -71,7 +71,7 @@ footer{text-align:center;padding:25px 15px;color:#8994a3;font-size:12px}
  <div class="hero">
   <h1>Tra cứu vận đơn</h1>
   <p>Nhập mã vận đơn để xem hành trình giao hàng của bạn.</p>
-  <span class="demo">BẢN MÔ PHỎNG HÀNH TRÌNH</span>
+  <span class="demo">Giao hàng tận tâm – Nâng tầm chất lượng.</span>
  </div>
  <div class="card">
   <label for="tracking">MÃ VẬN ĐƠN</label>
@@ -80,7 +80,7 @@ footer{text-align:center;padding:25px 15px;color:#8994a3;font-size:12px}
    <button id="searchBtn" onclick="searchOrder()">Tra cứu</button>
   </div>
   <div id="searchError" class="error"></div>
-  <div class="note">Chỉ những mã đã được đăng ký vận chuyển trên hệ thống mới hiển thị.</div>
+  <div class="note">Chỉ những đơn hàng đã được đăng ký vận chuyển trên hệ thống mới hiển thị.</div>
  </div>
  <div class="card result" id="result">
   <div class="orderhead">
@@ -90,7 +90,7 @@ footer{text-align:center;padding:25px 15px;color:#8994a3;font-size:12px}
   </div>
   <h3 style="font-size:16px;color:var(--navy)">Hành trình vận chuyển</h3>
   <div class="timeline" id="timeline"></div>
-  <div class="notice">Đây là hành trình mô phỏng phục vụ học tập. Tên kho, trạm và trạng thái không phải dữ liệu vận chuyển thực tế hoặc xác nhận giao hàng của đơn vị vận chuyển.</div>
+  <div class="notice">Ngày giao hàng được thông báo chỉ mang tính chất dự kiến, thời gian thực tế có thể thay đổi tùy theo tình hình vận chuyển, thời tiết, mưa gió hoặc các yếu tố khách quan khác. Chúng tôi luôn nỗ lực giao hàng đến quý khách trong thời gian sớm nhất.</div>
  </div>
 </section>
 
@@ -123,14 +123,14 @@ footer{text-align:center;padding:25px 15px;color:#8994a3;font-size:12px}
  </div>
 </section>
 </main>
-<footer>Copyright © 2026 Vận Chuyển 357 · Bản mô phỏng phục vụ học tập</footer>
+<footer>Copyright © 2026 Vận Chuyển 357. All rights reserved</footer>
 
 <script>
 const SUPABASE_URL = "https://ozjwoctvcdsjsrgjpctm.supabase.co";
 const SUPABASE_KEY = "sb_publishable_KjIpNTTLq0eXK7tHdiH5Vg_ofyxqI7T";
 const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-/* CÁC TUYẾN HÀNH TRÌNH MÔ PHỎNG: MỖI TUYẾN CÓ 10 MỐC */
+/* CÁC TUYẾN HÀNH TRÌNH : MỖI TUYẾN CÓ 10 MỐC */
 
 const routes = {
  north: [
@@ -143,7 +143,7 @@ const routes = {
   "Bưu cục phát khu vực nhận",
   "Đang giao đến khu vực người nhận",
   "Đang hoàn tất thủ tục giao hàng",
-  "Hoàn tất hành trình mô phỏng"
+  "Hoàn tất hành trình"
  ],
 
  south: [
@@ -156,7 +156,7 @@ const routes = {
   "Bưu cục phát khu vực nhận",
   "Đang giao đến khu vực người nhận",
   "Đang hoàn tất thủ tục giao hàng",
-  "Hoàn tất hành trình mô phỏng"
+  "Hoàn tất hành trình"
  ],
 
  central: [
@@ -169,7 +169,7 @@ const routes = {
   "Bưu cục phát khu vực nhận",
   "Đang giao đến khu vực người nhận",
   "Đang hoàn tất thủ tục giao hàng",
-  "Hoàn tất hành trình mô phỏng"
+  "Hoàn tất hành trình"
  ]
 };
 
