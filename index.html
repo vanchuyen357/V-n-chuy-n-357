@@ -55,7 +55,44 @@ footer{text-align:center;padding:25px 15px;color:#8994a3;font-size:12px}
 .orderitem{border:1px solid #e7ecf2;border-radius:10px;padding:13px;margin-top:10px;font-size:13px;display:flex;justify-content:space-between;gap:10px;align-items:center}
 .orderitem b{display:block;margin-bottom:5px}
 .hidden{display:none!important}
-@media(max-width:560px){main{margin:25px auto}.card{padding:18px}.hero h1{font-size:23px}.searchrow{flex-direction:column}.searchrow button{width:100%}.logo{font-size:17px}nav a{margin-left:8px;font-size:12px}}
+
+/* PHẦN GIỚI THIỆU VẬN CHUYỂN 357 */
+.about-section{margin-top:35px}
+.about-heading{text-align:center;margin-bottom:22px}
+.about-heading h2{font-size:24px;color:var(--navy);margin:0 0 9px}
+.about-heading p{font-size:14px;color:var(--muted);line-height:1.7;margin:0}
+.about-card{background:white;border-radius:15px;padding:24px;box-shadow:0 5px 24px #172b4d0d;margin-bottom:18px}
+.about-card h2{font-size:21px;color:var(--navy);margin:0 0 13px}
+.about-card h3{font-size:16px;color:var(--navy);margin:0 0 8px}
+.about-card p{font-size:14px;line-height:1.8;color:#64748b;margin:0}
+.about-label{font-size:11px;font-weight:800;letter-spacing:1.5px;color:var(--blue);margin-bottom:9px;display:block}
+.stats-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:20px}
+.stat-box{background:#f5f8fc;border:1px solid #e8eef5;border-radius:12px;padding:17px;text-align:center}
+.stat-number{font-size:27px;font-weight:800;color:var(--blue);margin-bottom:5px}
+.stat-title{font-size:13px;font-weight:700;color:var(--navy);margin-bottom:5px}
+.stat-desc{font-size:11px;color:var(--muted);line-height:1.5}
+.about-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:18px}
+.about-step{background:#f7f9fc;border-radius:12px;padding:16px}
+.about-step-number{width:30px;height:30px;border-radius:50%;background:#e4f0fb;color:var(--blue);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;margin-bottom:12px}
+.about-step p{font-size:12px;line-height:1.6}
+.about-points{display:grid;gap:12px;margin-top:15px}
+.about-point{display:flex;gap:11px;align-items:flex-start;font-size:13px;line-height:1.6;color:#526174}
+.about-check{width:22px;height:22px;flex:0 0 22px;border-radius:50%;background:#e7f5ee;color:var(--green);display:flex;align-items:center;justify-content:center;font-weight:800}
+.about-disclaimer{background:#fff8e8;border:1px solid #f4e6bd;border-radius:11px;padding:14px;font-size:12px;line-height:1.7;color:#765b1e;margin-top:18px}
+@media(max-width:560px){
+ main{margin:25px auto}
+ .card{padding:18px}
+ .hero h1{font-size:23px}
+ .searchrow{flex-direction:column}
+ .searchrow button{width:100%}
+ .logo{font-size:17px}
+ nav a{margin-left:8px;font-size:12px}
+ .about-card{padding:19px}
+ .about-heading h2{font-size:22px}
+ .about-steps{grid-template-columns:1fr}
+ .stats-grid{gap:9px}
+ .stat-box{padding:14px 9px}
+}
 </style>
 </head>
 <body>
@@ -71,7 +108,7 @@ footer{text-align:center;padding:25px 15px;color:#8994a3;font-size:12px}
  <div class="hero">
   <h1>Tra cứu vận đơn</h1>
   <p>Nhập mã vận đơn để xem hành trình giao hàng của bạn.</p>
-  <span class="demo">Giao hàng tận tâm – Nâng tầm chất lượng.</span>
+  <span class="demo">BẢN MÔ PHỎNG HÀNH TRÌNH</span>
  </div>
  <div class="card">
   <label for="tracking">MÃ VẬN ĐƠN</label>
@@ -80,7 +117,7 @@ footer{text-align:center;padding:25px 15px;color:#8994a3;font-size:12px}
    <button id="searchBtn" onclick="searchOrder()">Tra cứu</button>
   </div>
   <div id="searchError" class="error"></div>
-  <div class="note">Chỉ những đơn hàng đã được đăng ký vận chuyển trên hệ thống mới hiển thị.</div>
+  <div class="note">Chỉ những mã đã được đăng ký vận chuyển trên hệ thống mới hiển thị.</div>
  </div>
  <div class="card result" id="result">
   <div class="orderhead">
@@ -90,8 +127,88 @@ footer{text-align:center;padding:25px 15px;color:#8994a3;font-size:12px}
   </div>
   <h3 style="font-size:16px;color:var(--navy)">Hành trình vận chuyển</h3>
   <div class="timeline" id="timeline"></div>
-  <div class="notice">Ngày giao hàng được thông báo chỉ mang tính chất dự kiến, thời gian thực tế có thể thay đổi tùy theo tình hình vận chuyển, thời tiết, mưa gió hoặc các yếu tố khách quan khác. Chúng tôi luôn nỗ lực giao hàng đến quý khách trong thời gian sớm nhất.</div>
+  <div class="notice">Đây là hành trình mô phỏng phục vụ học tập. Tên kho, trạm và trạng thái không phải dữ liệu vận chuyển thực tế hoặc xác nhận giao hàng của đơn vị vận chuyển.</div>
  </div>
+
+ <!-- PHẦN GIỚI THIỆU ĐƯỢC THÊM MỚI -->
+ <section class="about-section" id="about">
+  <div class="about-heading">
+   <span class="about-label">VẬN CHUYỂN 357</span>
+   <h2>Kết nối hành trình, trao gửi niềm tin</h2>
+   <p>Khám phá nền tảng tra cứu hành trình trực quan, đơn giản và thuận tiện.</p>
+  </div>
+
+  <div class="about-card">
+   <span class="about-label">VỀ CHÚNG TÔI</span>
+   <h2>Đồng hành trên từng chặng đường</h2>
+   <p>VẬN CHUYỂN 357 được xây dựng với mong muốn mang đến trải nghiệm tra cứu hành trình hiện đại và dễ sử dụng. Thông qua hệ thống mô phỏng các chặng vận chuyển, người dùng có thể hình dung quá trình di chuyển của một đơn hàng từ nơi gửi đến khu vực nhận hàng. Chúng tôi hướng đến giao diện rõ ràng, thao tác thuận tiện và trải nghiệm thân thiện trên mọi thiết bị.</p>
+  </div>
+
+  <div class="about-card">
+   <span class="about-label">NHỮNG ĐIỂM NỔI BẬT</span>
+   <h2>Trải nghiệm tra cứu thuận tiện</h2>
+   <p>Các thông tin dưới đây mô tả phạm vi và tính năng của mô hình mô phỏng VẬN CHUYỂN 357.</p>
+
+   <div class="stats-grid">
+    <div class="stat-box">
+     <div class="stat-number">34</div>
+     <div class="stat-title">Tỉnh, thành</div>
+     <div class="stat-desc">Phạm vi địa danh trong mô hình hành trình mô phỏng</div>
+    </div>
+    <div class="stat-box">
+     <div class="stat-number">10</div>
+     <div class="stat-title">Chặng hành trình</div>
+     <div class="stat-desc">Các mốc mô phỏng theo tiến trình thời gian</div>
+    </div>
+    <div class="stat-box">
+     <div class="stat-number">24/7</div>
+     <div class="stat-title">Tra cứu trực tuyến</div>
+     <div class="stat-desc">Có thể truy cập trang tra cứu bất cứ lúc nào</div>
+    </div>
+    <div class="stat-box">
+     <div class="stat-number">100%</div>
+     <div class="stat-title">Thân thiện đa thiết bị</div>
+     <div class="stat-desc">Thiết kế phù hợp với điện thoại và máy tính</div>
+    </div>
+   </div>
+  </div>
+
+  <div class="about-card">
+   <span class="about-label">HƯỚNG DẪN SỬ DỤNG</span>
+   <h2>Tra cứu chỉ với 3 bước</h2>
+   <div class="about-steps">
+    <div class="about-step">
+     <div class="about-step-number">1</div>
+     <h3>Nhập mã vận đơn</h3>
+     <p>Điền mã vận đơn vào ô tra cứu trên trang chủ.</p>
+    </div>
+    <div class="about-step">
+     <div class="about-step-number">2</div>
+     <h3>Kiểm tra thông tin</h3>
+     <p>Hệ thống kiểm tra mã và hiển thị thông tin đã đăng ký.</p>
+    </div>
+    <div class="about-step">
+     <div class="about-step-number">3</div>
+     <h3>Xem hành trình</h3>
+     <p>Theo dõi các mốc hành trình mô phỏng theo thời gian.</p>
+    </div>
+   </div>
+  </div>
+
+  <div class="about-card">
+   <span class="about-label">TRẢI NGHIỆM NGƯỜI DÙNG</span>
+   <h2>Những giá trị chúng tôi hướng đến</h2>
+   <div class="about-points">
+    <div class="about-point"><span class="about-check">✓</span><span><b>Dễ dàng sử dụng:</b> Giao diện đơn giản, thao tác tra cứu nhanh chóng.</span></div>
+    <div class="about-point"><span class="about-check">✓</span><span><b>Thông tin rõ ràng:</b> Các mốc hành trình được trình bày trực quan, dễ theo dõi.</span></div>
+    <div class="about-point"><span class="about-check">✓</span><span><b>Tiện lợi trên nhiều thiết bị:</b> Hỗ trợ hiển thị phù hợp trên điện thoại, máy tính bảng và máy tính.</span></div>
+    <div class="about-point"><span class="about-check">✓</span><span><b>Tra cứu bằng mã riêng:</b> Chỉ những mã đã được đăng ký trên hệ thống mới có kết quả.</span></div>
+   </div>
+   <div class="about-disclaimer">
+    <b>Thông tin minh bạch:</b> VẬN CHUYỂN 357 hiện là website mô phỏng phục vụ học tập và trình diễn. Các tuyến đường, kho trung chuyển, trạng thái, phạm vi 34 tỉnh thành và số liệu hiển thị không đại diện cho mạng lưới giao nhận hoặc dịch vụ vận chuyển thực tế.
+   </div>
+  </div>
+ </section>
 </section>
 
 <section id="admin" class="admin">
@@ -123,14 +240,14 @@ footer{text-align:center;padding:25px 15px;color:#8994a3;font-size:12px}
  </div>
 </section>
 </main>
-<footer>Copyright © 2026 Vận Chuyển 357. All rights reserved</footer>
+<footer>Copyright © 2026 Vận Chuyển 357 · Bản mô phỏng phục vụ học tập</footer>
 
 <script>
 const SUPABASE_URL = "https://ozjwoctvcdsjsrgjpctm.supabase.co";
 const SUPABASE_KEY = "sb_publishable_KjIpNTTLq0eXK7tHdiH5Vg_ofyxqI7T";
 const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-/* CÁC TUYẾN HÀNH TRÌNH : MỖI TUYẾN CÓ 10 MỐC */
+/* CÁC TUYẾN HÀNH TRÌNH MÔ PHỎNG: MỖI TUYẾN CÓ 10 MỐC */
 
 const routes = {
  north: [
@@ -143,7 +260,7 @@ const routes = {
   "Bưu cục phát khu vực nhận",
   "Đang giao đến khu vực người nhận",
   "Đang hoàn tất thủ tục giao hàng",
-  "Hoàn tất hành trình"
+  "Hoàn tất hành trình mô phỏng"
  ],
 
  south: [
@@ -156,7 +273,7 @@ const routes = {
   "Bưu cục phát khu vực nhận",
   "Đang giao đến khu vực người nhận",
   "Đang hoàn tất thủ tục giao hàng",
-  "Hoàn tất hành trình"
+  "Hoàn tất hành trình mô phỏng"
  ],
 
  central: [
@@ -169,7 +286,7 @@ const routes = {
   "Bưu cục phát khu vực nhận",
   "Đang giao đến khu vực người nhận",
   "Đang hoàn tất thủ tục giao hàng",
-  "Hoàn tất hành trình"
+  "Hoàn tất hành trình mô phỏng"
  ]
 };
 
