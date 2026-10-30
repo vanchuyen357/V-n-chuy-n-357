@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -70,7 +71,7 @@ footer{text-align:center;padding:25px 15px;color:#8994a3;font-size:12px}
  <div class="hero">
   <h1>Tra cứu vận đơn</h1>
   <p>Nhập mã vận đơn để xem hành trình giao hàng của bạn.</p>
-  <span class="demo">Giao hàng tận tâm - Nâng tầm chất lượng</span>
+  <span class="demo">BẢN MÔ PHỎNG HÀNH TRÌNH</span>
  </div>
  <div class="card">
   <label for="tracking">MÃ VẬN ĐƠN</label>
@@ -89,7 +90,7 @@ footer{text-align:center;padding:25px 15px;color:#8994a3;font-size:12px}
   </div>
   <h3 style="font-size:16px;color:var(--navy)">Hành trình vận chuyển</h3>
   <div class="timeline" id="timeline"></div>
-  <div class="notice">Ngày giao hàng được tra cứu chỉ mang tính chất dự kiến, thời gian thực tế có thể thay đổi tùy theo tình hình vận chuyển, thời tiết, mưa gió hoặc các yếu tố khách quan khác. Chúng tôi luôn nỗ lực giao hàng đến quý khách trong thời gian sớm nhất.</div>
+  <div class="notice">Đây là hành trình mô phỏng phục vụ học tập. Tên kho, trạm và trạng thái không phải dữ liệu vận chuyển thực tế hoặc xác nhận giao hàng của đơn vị vận chuyển.</div>
  </div>
 </section>
 
@@ -122,131 +123,329 @@ footer{text-align:center;padding:25px 15px;color:#8994a3;font-size:12px}
  </div>
 </section>
 </main>
-<footer>Copyright © 2026 Vận Chuyển 357. All rights reserved</footer>
+<footer>Copyright © 2026 Vận Chuyển 357 · Bản mô phỏng phục vụ học tập</footer>
 
 <script>
 const SUPABASE_URL = "https://ozjwoctvcdsjsrgjpctm.supabase.co";
 const SUPABASE_KEY = "sb_publishable_KjIpNTTLq0eXK7tHdiH5Vg_ofyxqI7T";
 const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const stages = [
- "Đã tiếp nhận thông tin đơn hàng",
- "Đang xử lý tại kho gửi",
- "Đơn hàng đã xuất kho",
- "Đang trên đường vận chuyển",
- "Đang trung chuyển",
- "Đã đến trung tâm phân loại",
- "Đang vận chuyển đến khu vực nhận",
- "Đang chuẩn bị giao hàng",
- "Đang trên đường giao đến người nhận",
- "Giao hàng thành công"
-];
+/* CÁC TUYẾN HÀNH TRÌNH MÔ PHỎNG: MỖI TUYẾN CÓ 10 MỐC */
+
+const routes = {
+ north: [
+  "Kho khai thác TP. Hồ Chí Minh",
+  "Trung tâm trung chuyển miền Nam",
+  "Trung tâm khai thác khu vực miền Đông Nam Bộ",
+  "Trung tâm trung chuyển miền Trung",
+  "Trung tâm khai thác miền Bắc",
+  "Kho phân loại Hà Nội",
+  "Bưu cục phát khu vực nhận",
+  "Đang giao đến khu vực người nhận",
+  "Đang hoàn tất thủ tục giao hàng",
+  "Hoàn tất hành trình mô phỏng"
+ ],
+
+ south: [
+  "Kho khai thác Hà Nội",
+  "Trung tâm trung chuyển miền Bắc",
+  "Trung tâm khai thác khu vực Bắc Trung Bộ",
+  "Trung tâm trung chuyển miền Trung",
+  "Trung tâm khai thác miền Nam",
+  "Kho phân loại TP. Hồ Chí Minh",
+  "Bưu cục phát khu vực nhận",
+  "Đang giao đến khu vực người nhận",
+  "Đang hoàn tất thủ tục giao hàng",
+  "Hoàn tất hành trình mô phỏng"
+ ],
+
+ central: [
+  "Kho khai thác TP. Hồ Chí Minh",
+  "Trung tâm trung chuyển miền Nam",
+  "Trung tâm khai thác khu vực Tây Nguyên",
+  "Trung tâm trung chuyển miền Trung",
+  "Kho phân loại khu vực nhận",
+  "Trung tâm khai thác tỉnh/thành nhận",
+  "Bưu cục phát khu vực nhận",
+  "Đang giao đến khu vực người nhận",
+  "Đang hoàn tất thủ tục giao hàng",
+  "Hoàn tất hành trình mô phỏng"
+ ]
+};
+
+/* NHẬN DIỆN KHU VỰC TỪ TÊN TỈNH/THÀNH PHỐ */
+
+function getRoute(destination){
+ const d = String(destination || "").toLowerCase();
+
+ const north = [
+  "hà nội","ha noi","hải phòng","hai phong",
+  "quảng ninh","quang ninh","bắc ninh","bac ninh",
+  "bắc giang","bac giang","lạng sơn","lang son",
+  "cao bằng","cao bang","lào cai","lao cai",
+  "yên bái","yen bai","tuyên quang","tuyen quang",
+  "hà giang","ha giang","thái nguyên","thai nguyen",
+  "phú thọ","phu tho","vĩnh phúc","vinh phuc",
+  "hưng yên","hung yen","hải dương","hai duong",
+  "thái bình","thai binh","nam định","nam dinh",
+  "ninh bình","ninh binh","sơn la","son la",
+  "điện biên","dien bien","lai châu","lai chau",
+  "hòa bình","hoa binh"
+ ];
+
+ const central = [
+  "thanh hóa","thanh hoa","nghệ an","nghe an",
+  "hà tĩnh","ha tinh","quảng bình","quang binh",
+  "quảng trị","quang tri","huế","hue",
+  "đà nẵng","da nang","quảng nam","quang nam",
+  "quảng ngãi","quang ngai","bình định","binh dinh",
+  "phú yên","phu yen","khánh hòa","khanh hoa",
+  "ninh thuận","ninh thuan","bình thuận","binh thuan",
+  "kon tum","gia lai","đắk lắk","dak lak",
+  "đắk nông","dak nong","lâm đồng","lam dong"
+ ];
+
+ if(north.some(p => d.includes(p))) return routes.north;
+ if(central.some(p => d.includes(p))) return routes.central;
+
+ // Các tỉnh/thành còn lại mặc định theo tuyến miền Nam
+ return routes.south;
+}
 
 function showHome(){
  document.getElementById("home").style.display="block";
  document.getElementById("admin").style.display="none";
 }
+
 async function showAdmin(){
  document.getElementById("home").style.display="none";
  document.getElementById("admin").style.display="block";
  const {data:{session}}=await db.auth.getSession();
- if(session){document.getElementById("loginBox").classList.add("hidden");document.getElementById("adminPanel").classList.remove("hidden");loadOrders();}
- else{document.getElementById("loginBox").classList.remove("hidden");document.getElementById("adminPanel").classList.add("hidden");}
+ if(session){
+  document.getElementById("loginBox").classList.add("hidden");
+  document.getElementById("adminPanel").classList.remove("hidden");
+  loadOrders();
+ }else{
+  document.getElementById("loginBox").classList.remove("hidden");
+  document.getElementById("adminPanel").classList.add("hidden");
+ }
 }
-function getProgress(createdAt){
- const start=new Date(createdAt);
- const elapsed=Math.max(0,Math.floor((Date.now()-start.getTime())/86400000));
- if(elapsed>=10)return {day:10,delayed:true,status:"Hành trình mô phỏng đang kéo dài"};
- return {day:Math.min(10,elapsed+1),delayed:false,status:stages[Math.min(9,elapsed)]};
+
+/* TỰ ĐỘNG CHUYỂN MỐC SAU MỖI 24 GIỜ, TỐI ĐA 10 NGÀY */
+
+function getProgress(createdAt,destination){
+ const start = new Date(createdAt);
+ const elapsed = Math.max(
+  0,
+  Math.floor((Date.now()-start.getTime())/86400000)
+ );
+
+ const route = getRoute(destination);
+
+ if(elapsed>=10){
+  return {
+   day:10,
+   delayed:true,
+   status:"Hành trình mô phỏng đang kéo dài",
+   route
+  };
+ }
+
+ return {
+  day:Math.min(10,elapsed+1),
+  delayed:false,
+  status:route[Math.min(9,elapsed)],
+  route
+ };
 }
+
 function formatDate(date){
- return new Date(date).toLocaleDateString("vi-VN",{day:"2-digit",month:"2-digit",year:"numeric"});
+ return new Date(date).toLocaleDateString("vi-VN",{
+  day:"2-digit",month:"2-digit",year:"numeric"
+ });
 }
+
 async function searchOrder(){
  const code=document.getElementById("tracking").value.trim();
  const error=document.getElementById("searchError");
  const btn=document.getElementById("searchBtn");
+
  error.textContent="";
  document.getElementById("result").style.display="none";
- if(!code){error.textContent="Vui lòng nhập mã vận đơn.";return;}
- btn.disabled=true;btn.textContent="Đang tra cứu...";
+
+ if(!code){
+  error.textContent="Vui lòng nhập mã vận đơn.";
+  return;
+ }
+
+ btn.disabled=true;
+ btn.textContent="Đang tra cứu...";
+
  const {data,error:err}=await db.rpc("track_order",{code});
- btn.disabled=false;btn.textContent="Tra cứu";
- if(err){error.textContent="Chưa thể tra cứu. Vui lòng thử lại.";return;}
- if(!data||data.length===0){error.textContent="Không tìm thấy mã vận đơn.";return;}
+
+ btn.disabled=false;
+ btn.textContent="Tra cứu";
+
+ if(err){
+  error.textContent="Chưa thể tra cứu. Vui lòng thử lại.";
+  return;
+ }
+
+ if(!data||data.length===0){
+  error.textContent="Không tìm thấy mã vận đơn.";
+  return;
+ }
+
  const order=data[0];
- const progress=getProgress(order.created_at);
+ const progress=getProgress(order.created_at,order.destination);
+
  document.getElementById("orderInfo").innerHTML=
- "Mã vận đơn: <b>"+escapeHtml(order.tracking_code)+"</b><br>"+
- "Người nhận: <b>"+escapeHtml(order.recipient)+"</b><br>"+
- "Điểm đến: <b>"+escapeHtml(order.destination)+"</b><br>"+
- "Ngày tạo: "+formatDate(order.created_at);
+  "Mã vận đơn: <b>"+escapeHtml(order.tracking_code)+"</b><br>"+
+  "Người nhận: <b>"+escapeHtml(order.recipient)+"</b><br>"+
+  "Điểm đến: <b>"+escapeHtml(order.destination)+"</b><br>"+
+  "Ngày tạo: "+formatDate(order.created_at);
+
  document.getElementById("currentStatus").textContent=progress.status;
+
  let html="";
- stages.forEach((stage,i)=>{
+
+ progress.route.forEach((stage,i)=>{
   const day=i+1;
   const done=day<progress.day;
   const current=day===progress.day;
-  html+='<div class="step '+(done?"done ":"")+(current?"current":"")+'"><div class="dot"></div><div><strong>'+stage+'</strong><small>Ngày '+day+(done?" · Đã qua":current?" · Trạng thái hiện tại":" · Dự kiến")+'</small></div></div>';
+
+  html+='<div class="step '+(done?"done ":"")+(current?"current":"")+'">'+
+   '<div class="dot"></div>'+
+   '<div><strong>'+stage+'</strong>'+
+   '<small>'+(done?"Đã qua trạm":current?"Đang ở trạm này":"Đang chờ đến")+'</small>'+
+   '</div></div>';
  });
+
  if(progress.delayed){
-  html+='<div class="notice">Hành trình đang kéo dài hơn dự kiến. Vui lòng theo dõi để xem cập nhật tiếp theo.</div>';
+  html+='<div class="notice">Hành trình mô phỏng đang kéo dài hơn 10 ngày. Đây không phải thông báo chậm giao hàng thực tế.</div>';
  }
+
  document.getElementById("timeline").innerHTML=html;
  document.getElementById("result").style.display="block";
 }
+
 function escapeHtml(value){
- return String(value??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+ return String(value??"").replace(/[&<>"']/g,c=>({
+  "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+ }[c]));
 }
+
 async function login(){
  const email=document.getElementById("email").value.trim();
  const password=document.getElementById("password").value;
  const error=document.getElementById("loginError");
+
  error.textContent="";
+
  const {error:err}=await db.auth.signInWithPassword({email,password});
- if(err){error.textContent="Đăng nhập không thành công. Hãy kiểm tra email và mật khẩu.";return;}
+
+ if(err){
+  error.textContent="Đăng nhập không thành công. Hãy kiểm tra email và mật khẩu.";
+  return;
+ }
+
  document.getElementById("loginBox").classList.add("hidden");
  document.getElementById("adminPanel").classList.remove("hidden");
  loadOrders();
 }
+
 async function logout(){
  await db.auth.signOut();
  document.getElementById("loginBox").classList.remove("hidden");
  document.getElementById("adminPanel").classList.add("hidden");
 }
+
 async function addOrder(){
  const code=document.getElementById("newCode").value.trim();
  const recipient=document.getElementById("newRecipient").value.trim();
  const destination=document.getElementById("newDestination").value.trim();
  const error=document.getElementById("adminError");
  const btn=document.getElementById("addBtn");
+
  error.textContent="";
- if(!code||!recipient||!destination){error.textContent="Vui lòng nhập đủ mã vận đơn, người nhận và điểm đến.";return;}
+
+ if(!code||!recipient||!destination){
+  error.textContent="Vui lòng nhập đủ mã vận đơn, người nhận và điểm đến.";
+  return;
+ }
+
  btn.disabled=true;
- const {error:err}=await db.from("orders").insert({tracking_code:code,recipient,destination,status:"Đang xử lý"});
+
+ const {error:err}=await db.from("orders").insert({
+  tracking_code:code,
+  recipient,
+  destination,
+  status:"Đang xử lý"
+ });
+
  btn.disabled=false;
- if(err){error.textContent=err.code==="23505"?"Mã vận đơn này đã tồn tại.":"Không thể thêm mã. Kiểm tra quyền quản trị và thử lại.";return;}
+
+ if(err){
+  error.textContent=err.code==="23505"
+   ?"Mã vận đơn này đã tồn tại."
+   :"Không thể thêm mã. Kiểm tra quyền quản trị và thử lại.";
+  return;
+ }
+
  document.getElementById("newCode").value="";
  document.getElementById("newRecipient").value="";
  document.getElementById("newDestination").value="";
- error.style.color="green";error.textContent="Đã thêm mã vận đơn.";
+
+ error.style.color="green";
+ error.textContent="Đã thêm mã vận đơn.";
+
  loadOrders();
 }
+
 async function loadOrders(){
  const list=document.getElementById("orderList");
  list.textContent="Đang tải...";
- const {data,error}=await db.from("orders").select("id,tracking_code,recipient,destination,created_at").order("created_at",{ascending:false});
- if(error){list.textContent="Không tải được danh sách. Kiểm tra quyền truy cập.";return;}
- if(!data.length){list.textContent="Chưa có mã vận đơn nào.";return;}
- list.innerHTML=data.map(o=>'<div class="orderitem"><div><b>'+escapeHtml(o.tracking_code)+'</b>'+escapeHtml(o.recipient)+' · '+escapeHtml(o.destination)+'</div><button class="danger" onclick="deleteOrder('+Number(o.id)+')">Xóa</button></div>').join("");
+
+ const {data,error}=await db.from("orders")
+  .select("id,tracking_code,recipient,destination,created_at")
+  .order("created_at",{ascending:false});
+
+ if(error){
+  list.textContent="Không tải được danh sách. Kiểm tra quyền truy cập.";
+  return;
+ }
+
+ if(!data.length){
+  list.textContent="Chưa có mã vận đơn nào.";
+  return;
+ }
+
+ list.innerHTML=data.map(o=>
+  '<div class="orderitem"><div><b>'+
+  escapeHtml(o.tracking_code)+'</b>'+
+  escapeHtml(o.recipient)+' · '+
+  escapeHtml(o.destination)+'</div>'+
+  '<button class="danger" onclick="deleteOrder('+Number(o.id)+')">Xóa</button></div>'
+ ).join("");
 }
+
 async function deleteOrder(id){
  if(!confirm("Bạn có chắc muốn xóa mã vận đơn này?"))return;
+
  const {error}=await db.from("orders").delete().eq("id",id);
- if(error){alert("Không xóa được. Hãy kiểm tra quyền quản trị.");return;}
+
+ if(error){
+  alert("Không xóa được. Hãy kiểm tra quyền quản trị.");
+  return;
+ }
+
  loadOrders();
 }
-document.getElementById("tracking").addEventListener("keydown",e=>{if(e.key==="Enter")searchOrder();});
+
+document.getElementById("tracking").addEventListener("keydown",e=>{
+ if(e.key==="Enter")searchOrder();
+});
+
 showHome();
 </script>
 </body>
