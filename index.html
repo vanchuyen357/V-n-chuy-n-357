@@ -1,247 +1,253 @@
-
 <!DOCTYPE html>
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#102746">
-<title>Vận Chuyển 24H | Tra cứu vận đơn</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vận Chuyển 357 | Tra cứu vận đơn</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-:root{--navy:#102746;--blue:#1769d2;--light:#f3f6fb;--muted:#718096;--green:#15966b}
+:root{--navy:#10243b;--blue:#1769aa;--light:#f3f6fa;--text:#243449;--muted:#718096;--green:#16865b;--red:#c0392b}
 *{box-sizing:border-box}
-body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;background:var(--light);color:#172b45}
-header{background:var(--navy);color:white;padding:17px 6%;display:flex;align-items:center;justify-content:space-between;gap:12px}
-.brand{display:flex;align-items:center;gap:11px;font-weight:800;font-size:19px;letter-spacing:.2px}
-.logo{width:39px;height:39px;border-radius:11px;background:#fff;color:var(--blue);display:grid;place-items:center;font-size:22px}
-nav button{background:transparent;color:#dbe7f8;border:0;padding:10px;cursor:pointer;font-size:13px}
-.hero{background:linear-gradient(125deg,#102746,#174d86);color:white;padding:65px 20px 82px;text-align:center}
-.eyebrow{font-size:12px;letter-spacing:2px;color:#a9cafa;font-weight:700}
-.hero h1{font-size:clamp(29px,5vw,43px);margin:14px 0 12px}
-.hero p{color:#d3e2f5;margin:0 auto 28px;max-width:570px;line-height:1.7}
-.search{max-width:650px;margin:auto;background:white;padding:8px;border-radius:13px;display:flex;box-shadow:0 12px 35px #061a3540}
-.search input{flex:1;min-width:0;border:0;outline:0;padding:13px;font-size:15px;color:#172b45}
-.primary{background:var(--blue);color:white;border:0;border-radius:9px;padding:14px 22px;font-weight:700;cursor:pointer}
-.primary:hover{background:#0e57b7}
-.container{max-width:1000px;margin:-38px auto 50px;padding:0 17px;position:relative}
-.card{background:white;border-radius:15px;padding:25px;margin-bottom:18px;box-shadow:0 7px 25px #172b450c}
-.section-title{font-size:19px;font-weight:800;margin:0 0 7px}
-.muted{color:var(--muted);font-size:13px;line-height:1.6}
-.notice{background:#fff8e9;border:1px solid #f3dfb4;color:#79561a;padding:12px 15px;border-radius:10px;font-size:12px;line-height:1.6;margin-bottom:17px}
+body{margin:0;background:var(--light);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;color:var(--text)}
+header{background:var(--navy);color:white;padding:19px 16px}
+.head{max-width:980px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.logo{font-size:20px;font-weight:800;letter-spacing:.5px}
+.logo small{display:block;font-size:11px;font-weight:500;opacity:.7;letter-spacing:2px;margin-top:4px}
+nav a{color:white;text-decoration:none;font-size:13px;margin-left:15px;opacity:.9}
+main{max-width:760px;margin:38px auto;padding:0 16px}
+.hero{text-align:center;margin-bottom:25px}
+.hero h1{font-size:27px;color:var(--navy);margin:0 0 9px}
+.hero p{color:var(--muted);margin:0;font-size:14px}
+.card{background:white;border-radius:15px;padding:24px;box-shadow:0 5px 24px #172b4d0d;margin-bottom:18px}
+label{display:block;font-size:13px;font-weight:700;margin-bottom:8px}
+input{width:100%;padding:14px;border:1px solid #d8e0e9;border-radius:9px;font-size:16px;outline:none;background:white}
+input:focus{border-color:var(--blue);box-shadow:0 0 0 3px #1769aa18}
+button{border:0;border-radius:9px;padding:13px 18px;background:var(--blue);color:white;font-size:15px;font-weight:700;cursor:pointer}
+button:disabled{opacity:.6;cursor:wait}
+.searchrow{display:flex;gap:10px}
+.searchrow input{flex:1;min-width:0}
+.note{font-size:12px;color:var(--muted);text-align:center;margin-top:14px}
+.demo{display:inline-block;background:#fff4d8;color:#805900;border-radius:20px;padding:5px 10px;font-size:11px;font-weight:700;margin-top:14px}
 .result{display:none}
-.topline{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
-.status{background:#e8f7f1;color:#087b55;padding:8px 12px;border-radius:30px;font-size:12px;font-weight:800}
-.info-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:23px 0}
-.info{background:#f5f8fc;padding:15px;border-radius:10px;min-width:0}
-.info small{display:block;color:var(--muted);font-size:11px;margin-bottom:7px}
-.info strong{font-size:14px;overflow-wrap:anywhere}
-.progress{height:7px;background:#e9eef5;border-radius:10px;margin:15px 0 25px;overflow:hidden}
-.progress div{height:100%;background:var(--green);width:0%;transition:width .4s}
-.timeline{margin:25px 0 5px 7px;border-left:2px solid #e2eaf3;padding-left:25px}
-.event{position:relative;padding:0 0 25px}
-.event:before{content:"";position:absolute;left:-32px;top:3px;width:12px;height:12px;border-radius:50%;background:#d5deea;border:3px solid white;box-shadow:0 0 0 1px #d5deea}
-.event.done:before{background:var(--green);box-shadow:0 0 0 1px var(--green)}
-.event h4{margin:0 0 5px;font-size:14px}
-.event p{margin:0;color:var(--muted);font-size:12px;line-height:1.5}
-.event time{font-size:11px;color:#8a98aa;display:block;margin-top:5px}
-.features{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:20px}
-.feature{text-align:center;padding:22px 13px;background:white;border-radius:13px}
-.feature b{display:block;margin:10px 0 6px;font-size:14px}
-.feature span{font-size:12px;color:var(--muted);line-height:1.5}
-footer{background:#102746;color:#d3e0f0;padding:30px 20px;text-align:center;font-size:12px;line-height:1.8}
-.admin{display:none;max-width:850px;margin:30px auto;padding:0 16px}
-.admin input,.admin select{width:100%;padding:12px;border:1px solid #dce4ee;border-radius:8px;margin:7px 0 14px;font-size:14px;background:white}
-.admin label{font-size:12px;font-weight:700}
-.admin-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.admin-list{overflow-wrap:anywhere;border-top:1px solid #edf0f5;padding:13px 0;font-size:13px}
-.danger{background:#fff0f0;color:#b52c2c;border:0;border-radius:7px;padding:8px 12px;cursor:pointer}
-.login{max-width:390px;margin:45px auto;padding:0 16px}
+.orderhead{border-bottom:1px solid #edf0f4;padding-bottom:17px;margin-bottom:20px}
+.orderhead h2{margin:0 0 8px;color:var(--navy);font-size:20px}
+.meta{font-size:13px;color:var(--muted);line-height:1.8}
+.status{display:inline-block;background:#e8f3ff;color:#155b91;border-radius:20px;padding:7px 12px;font-size:12px;font-weight:700;margin-top:12px}
+.timeline{margin-top:22px}
+.step{display:flex;gap:13px;position:relative;padding-bottom:23px}
+.step:not(:last-child):before{content:"";position:absolute;left:10px;top:23px;bottom:0;width:2px;background:#dfe6ee}
+.dot{width:22px;height:22px;flex:0 0 22px;border-radius:50%;border:2px solid #cbd5e1;background:white;z-index:1}
+.step.done .dot{background:var(--green);border-color:var(--green)}
+.step.current .dot{border:6px solid var(--blue);background:white}
+.step strong{display:block;font-size:14px;margin:2px 0 5px}
+.step small{font-size:12px;color:var(--muted)}
+.notice{font-size:12px;line-height:1.6;color:#6b7280;background:#f7f9fc;padding:12px;border-radius:9px;margin-top:18px}
+.error{color:var(--red);font-size:13px;margin-top:12px}
+footer{text-align:center;padding:25px 15px;color:#8994a3;font-size:12px}
+.admin{display:none}
+.admin h2{margin-top:0;color:var(--navy)}
+.field{margin:13px 0}
+.field input{font-size:14px}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+.secondary{background:#e9eef5;color:var(--navy)}
+.danger{background:#fff0ef;color:var(--red)}
+.orderitem{border:1px solid #e7ecf2;border-radius:10px;padding:13px;margin-top:10px;font-size:13px;display:flex;justify-content:space-between;gap:10px;align-items:center}
+.orderitem b{display:block;margin-bottom:5px}
 .hidden{display:none!important}
-@media(max-width:600px){header{padding:13px 15px}.brand{font-size:16px}.hero{padding:49px 17px 72px}.search{flex-direction:column}.search input{padding:14px}.info-grid,.features{grid-template-columns:1fr}.card{padding:19px}.admin-grid{grid-template-columns:1fr}}
+@media(max-width:560px){main{margin:25px auto}.card{padding:18px}.hero h1{font-size:23px}.searchrow{flex-direction:column}.searchrow button{width:100%}.logo{font-size:17px}nav a{margin-left:8px;font-size:12px}}
 </style>
 </head>
 <body>
 <header>
- <div class="brand"><div class="logo">↗</div><span>VẬN CHUYỂN 24H</span></div>
- <nav><button onclick="showHome()">TRA CỨU</button><button onclick="showLogin()">QUẢN TRỊ</button></nav>
+ <div class="head">
+  <div class="logo">VẬN CHUYỂN 357<small>TRA CỨU HÀNH TRÌNH</small></div>
+  <nav><a href="#" onclick="showHome()">Tra cứu</a><a href="#admin" onclick="showAdmin()">Quản trị</a></nav>
+ </div>
 </header>
 
-<main id="home">
- <section class="hero">
-  <div class="eyebrow">LOGISTICS • DELIVERY • TRACKING</div>
-  <h1>Tra cứu hành trình đơn hàng</h1>
-  <p>Theo dõi hành trình vận chuyển của bạn nhanh chóng, thuận tiện và dễ dàng.</p>
-  <div class="search">
-   <input id="trackingInput" placeholder="Nhập mã vận đơn của bạn..." autocomplete="off">
-   <button class="primary" onclick="trackOrder()">TRA CỨU NGAY →</button>
-  </div>
- </section>
-
- <div class="container">
-  <div class="notice">⚠️ <b>THÔNG BÁO:</b> Đây là website mô phỏng hoạt động vận chuyển. Mọi mã vận đơn, trạng thái và hành trình hiển thị đều là dữ liệu mẫu, không đại diện cho dịch vụ giao hàng thực tế.</div>
-
-  <section class="card result" id="result">
-   <div class="topline">
-    <div><div class="muted">MÃ VẬN ĐƠN</div><h2 id="rCode" style="margin:5px 0"></h2></div>
-    <span class="status" id="rStatus">Đang xử lý</span>
-   </div>
-   <div class="info-grid">
-    <div class="info"><small>NGƯỜI NHẬN</small><strong id="rName">Khách hàng</strong></div>
-    <div class="info"><small>ĐIỂM ĐẾN</small><strong id="rDestination">Việt Nam</strong></div>
-    <div class="info"><small>TRẠNG THÁI</small><strong id="rShort">Đang cập nhật</strong></div>
-   </div>
-   <div class="topline"><b>Hành trình vận chuyển</b><span class="muted" id="rPercent">0% hoàn thành</span></div>
-   <div class="progress"><div id="progressBar"></div></div>
-   <h3 class="section-title">Chi tiết hành trình</h3>
-   <p class="muted">Các mốc trạng thái trong hành trình mô phỏng được cập nhật tự động.</p>
-   <div class="timeline" id="timeline"></div>
-  </section>
-
-  <section class="card" id="welcome">
-   <h2 class="section-title">Hệ thống tra cứu vận đơn</h2>
-   <p class="muted">Nhập mã vận đơn được cung cấp để xem thông tin và hành trình mô phỏng của đơn hàng.</p>
-   <p class="muted">Mã dùng thử: <b>VC24H001</b></p>
-  </section>
-
-  <div class="features">
-   <div class="feature"><div style="font-size:27px">⌕</div><b>Tra cứu dễ dàng</b><span>Nhập mã vận đơn để xem thông tin đơn hàng.</span></div>
-   <div class="feature"><div style="font-size:27px">◷</div><b>Cập nhật hành trình</b><span>Các mốc vận chuyển mẫu tự động thay đổi.</span></div>
-   <div class="feature"><div style="font-size:27px">▣</div><b>Thông tin rõ ràng</b><span>Trình bày trạng thái theo từng giai đoạn.</span></div>
-  </div>
+<main>
+<section id="home">
+ <div class="hero">
+  <h1>Tra cứu vận đơn</h1>
+  <p>Nhập mã vận đơn để xem hành trình minh họa của bạn.</p>
+  <span class="demo">BẢN MÔ PHỎNG PHỤC VỤ HỌC TẬP</span>
  </div>
+ <div class="card">
+  <label for="tracking">MÃ VẬN ĐƠN</label>
+  <div class="searchrow">
+   <input id="tracking" placeholder="Nhập mã vận đơn..." autocomplete="off">
+   <button id="searchBtn" onclick="searchOrder()">Tra cứu</button>
+  </div>
+  <div id="searchError" class="error"></div>
+  <div class="note">Chỉ những mã đã được đăng ký trên hệ thống mới hiển thị.</div>
+ </div>
+ <div class="card result" id="result">
+  <div class="orderhead">
+   <h2>Thông tin vận đơn</h2>
+   <div class="meta" id="orderInfo"></div>
+   <span class="status" id="currentStatus"></span>
+  </div>
+  <h3 style="font-size:16px;color:var(--navy)">Hành trình vận chuyển</h3>
+  <div class="timeline" id="timeline"></div>
+  <div class="notice">Đây là hành trình mô phỏng phục vụ học tập. Trạng thái và thời gian hiển thị không phải dữ liệu giao nhận thực tế hoặc xác nhận giao hàng của đơn vị vận chuyển.</div>
+ </div>
+</section>
+
+<section id="admin" class="admin">
+ <div class="hero">
+  <h1>Quản trị vận đơn</h1>
+  <p>Đăng nhập để quản lý các mã vận đơn mô phỏng.</p>
+ </div>
+ <div class="card" id="loginBox">
+  <h2>Đăng nhập quản trị</h2>
+  <div class="field"><label>Email quản trị</label><input id="email" type="email" placeholder="Email đăng nhập"></div>
+  <div class="field"><label>Mật khẩu</label><input id="password" type="password" placeholder="Mật khẩu"></div>
+  <button id="loginBtn" onclick="login()">Đăng nhập</button>
+  <div id="loginError" class="error"></div>
+ </div>
+
+ <div class="card hidden" id="adminPanel">
+  <div class="actions" style="justify-content:space-between;align-items:center">
+   <h2>Quản lý mã vận đơn</h2>
+   <button class="secondary" onclick="logout()">Đăng xuất</button>
+  </div>
+  <div class="field"><label>Mã vận đơn</label><input id="newCode" placeholder="Ví dụ: VC357001"></div>
+  <div class="field"><label>Tên người nhận</label><input id="newRecipient" placeholder="Tên người nhận"></div>
+  <div class="field"><label>Điểm đến</label><input id="newDestination" placeholder="Tỉnh/thành phố"></div>
+  <button id="addBtn" onclick="addOrder()">Thêm mã vận đơn</button>
+  <div id="adminError" class="error"></div>
+  <hr style="border:0;border-top:1px solid #edf0f4;margin:23px 0">
+  <h3 style="font-size:16px">Danh sách mã đã tạo</h3>
+  <div id="orderList">Đang tải...</div>
+ </div>
+</section>
 </main>
-
-<section class="login hidden" id="login">
- <div class="card">
-  <h2 class="section-title">Đăng nhập quản trị</h2>
-  <p class="muted">Khu vực dành cho người quản lý website.</p>
-  <label>Mật khẩu bản xem thử</label>
-  <input id="adminPass" type="password" placeholder="Nhập mật khẩu">
-  <button class="primary" style="width:100%" onclick="loginAdmin()">ĐĂNG NHẬP</button>
-  <p class="muted">Bản xem thử: mật khẩu 246810. Đây chưa phải cơ chế bảo mật thực tế.</p>
-  <button onclick="showHome()" style="border:0;background:none;color:#1769d2;padding:12px 0">← Quay lại trang chủ</button>
- </div>
-</section>
-
-<section class="admin hidden" id="admin">
- <div class="card">
-  <div class="topline"><div><h2 class="section-title">Bảng điều khiển</h2><p class="muted">Quản lý mã vận đơn mô phỏng</p></div><button class="danger" onclick="logout()">Đăng xuất</button></div>
-  <div class="notice">Đây là bản thử nghiệm lưu dữ liệu trên trình duyệt hiện tại. Chưa có đăng nhập bảo mật hoặc đồng bộ giữa các thiết bị.</div>
-  <h3>Thêm vận đơn mới</h3>
-  <label>Mã vận đơn</label><input id="newCode" placeholder="Ví dụ: VC24H002">
-  <div class="admin-grid">
-   <div><label>Tên người nhận</label><input id="newName" placeholder="Nguyễn Văn A"></div>
-   <div><label>Điểm đến</label><input id="newDestination" placeholder="TP. Hồ Chí Minh"></div>
-  </div>
-  <label>Giai đoạn bắt đầu</label>
-  <select id="newStage">
-   <option value="0">Đã tiếp nhận đơn hàng</option>
-   <option value="1">Đang xử lý tại kho</option>
-   <option value="2">Đang vận chuyển</option>
-   <option value="3">Đang giao hàng</option>
-   <option value="4">Đã giao hàng (mô phỏng)</option>
-  </select>
-  <button class="primary" onclick="addOrder()">+ THÊM VẬN ĐƠN</button>
- </div>
- <div class="card"><h3>Danh sách vận đơn</h3><div id="orderList"></div></div>
-</section>
-
-<footer>
- <b>VẬN CHUYỂN 24H</b><br>
- Hệ thống mô phỏng tra cứu và theo dõi hành trình vận chuyển.<br>
- © 2026 Vận Chuyển 24H. Demo website – Không phải dịch vụ giao hàng thực tế.
-</footer>
+<footer>VẬN CHUYỂN 357 · Hệ thống mô phỏng phục vụ học tập</footer>
 
 <script>
-const stages=[
- ["Đã tiếp nhận đơn hàng","Đơn hàng đã được ghi nhận trên hệ thống mô phỏng."],
- ["Đang xử lý tại kho","Đơn hàng đang được phân loại tại kho mô phỏng."],
- ["Đã rời kho trung chuyển","Đơn hàng bắt đầu hành trình vận chuyển mẫu."],
- ["Đang vận chuyển","Đơn hàng đang di chuyển đến khu vực nhận hàng."],
- ["Đang giao hàng","Đơn hàng đang trong giai đoạn giao đến người nhận."],
- ["Đã giao hàng","Hành trình mô phỏng đã hoàn tất."]
+const SUPABASE_URL = "https://ozjwoctvcdsjsrgjpctm.supabase.co";
+const SUPABASE_KEY = "sb_publishable_KjIpNTTLq0eXK7tHdiH5Vg_ofyxqI7T";
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+const stages = [
+ "Đã tiếp nhận thông tin đơn hàng",
+ "Đang xử lý tại kho gửi",
+ "Đơn hàng đã xuất kho",
+ "Đang trên đường vận chuyển",
+ "Đang trung chuyển",
+ "Đã đến trung tâm phân loại",
+ "Đang vận chuyển đến khu vực nhận",
+ "Đang chuẩn bị giao hàng",
+ "Đang trên đường giao đến người nhận",
+ "Hoàn tất hành trình mô phỏng"
 ];
-const KEY="vc24h_demo_orders";
-function loadOrders(){
- try{return JSON.parse(localStorage.getItem(KEY))||[]}catch(e){return []}
-}
-function saveOrders(data){localStorage.setItem(KEY,JSON.stringify(data))}
-function init(){
- let orders=loadOrders();
- if(!orders.some(o=>o.code==="VC24H001")){
-  orders.push({code:"VC24H001",name:"Khách hàng mẫu",destination:"TP. Hồ Chí Minh",stage:0,created:Date.now()});
-  saveOrders(orders);
- }
-}
-function currentStage(o){
- return Math.min(5,Math.max(o.stage||0,(o.stage||0)+Math.floor((Date.now()-(o.created||Date.now()))/60000)));
-}
-function trackOrder(){
- const code=document.getElementById("trackingInput").value.trim().toUpperCase();
- const o=loadOrders().find(x=>x.code.toUpperCase()===code);
- if(!code){alert("Vui lòng nhập mã vận đơn.");return}
- if(!o){alert("Không tìm thấy mã vận đơn này. Vui lòng kiểm tra lại.");return}
- showHome();
- document.getElementById("welcome").classList.add("hidden");
- document.getElementById("result").style.display="block";
- document.getElementById("rCode").textContent=o.code;
- document.getElementById("rName").textContent=o.name;
- document.getElementById("rDestination").textContent=o.destination;
- const s=currentStage(o);
- document.getElementById("rStatus").textContent=stages[s][0];
- document.getElementById("rShort").textContent=stages[s][0];
- document.getElementById("rPercent").textContent=Math.round(s/5*100)+"% hoàn thành";
- document.getElementById("progressBar").style.width=(s/5*100)+"%";
- document.getElementById("timeline").innerHTML=stages.map((v,i)=>`
- <div class="event ${i<=s?'done':''}">
- <h4>${v[0]}</h4><p>${v[1]}</p>
- <time>${i<=s?(i===s?'Đang ở giai đoạn này':'Đã hoàn thành (mô phỏng)'):'Đang chờ cập nhật'}</time>
- </div>`).join("");
-}
+
 function showHome(){
- document.getElementById("home").classList.remove("hidden");
- document.getElementById("login").classList.add("hidden");
- document.getElementById("admin").classList.add("hidden");
+ document.getElementById("home").style.display="block";
+ document.getElementById("admin").style.display="none";
 }
-function showLogin(){
- document.getElementById("home").classList.add("hidden");
- document.getElementById("login").classList.remove("hidden");
- document.getElementById("admin").classList.add("hidden");
+async function showAdmin(){
+ document.getElementById("home").style.display="none";
+ document.getElementById("admin").style.display="block";
+ const {data:{session}}=await db.auth.getSession();
+ if(session){document.getElementById("loginBox").classList.add("hidden");document.getElementById("adminPanel").classList.remove("hidden");loadOrders();}
+ else{document.getElementById("loginBox").classList.remove("hidden");document.getElementById("adminPanel").classList.add("hidden");}
 }
-function loginAdmin(){
- if(document.getElementById("adminPass").value==="246810"){
- document.getElementById("login").classList.add("hidden");
- document.getElementById("admin").classList.remove("hidden");
- renderOrders();
- }else alert("Mật khẩu chưa chính xác.");
+function getProgress(createdAt){
+ const start=new Date(createdAt);
+ const elapsed=Math.max(0,Math.floor((Date.now()-start.getTime())/86400000));
+ if(elapsed>=10)return {day:10,delayed:true,status:"Hành trình mô phỏng đang kéo dài"};
+ return {day:Math.min(10,elapsed+1),delayed:false,status:stages[Math.min(9,elapsed)]};
 }
-function logout(){showHome();document.getElementById("adminPass").value=""}
-function addOrder(){
- const code=document.getElementById("newCode").value.trim().toUpperCase();
- const name=document.getElementById("newName").value.trim();
+function formatDate(date){
+ return new Date(date).toLocaleDateString("vi-VN",{day:"2-digit",month:"2-digit",year:"numeric"});
+}
+async function searchOrder(){
+ const code=document.getElementById("tracking").value.trim();
+ const error=document.getElementById("searchError");
+ const btn=document.getElementById("searchBtn");
+ error.textContent="";
+ document.getElementById("result").style.display="none";
+ if(!code){error.textContent="Vui lòng nhập mã vận đơn.";return;}
+ btn.disabled=true;btn.textContent="Đang tra cứu...";
+ const {data,error:err}=await db.rpc("track_order",{code});
+ btn.disabled=false;btn.textContent="Tra cứu";
+ if(err){error.textContent="Chưa thể tra cứu. Vui lòng thử lại.";return;}
+ if(!data||data.length===0){error.textContent="Không tìm thấy mã vận đơn.";return;}
+ const order=data[0];
+ const progress=getProgress(order.created_at);
+ document.getElementById("orderInfo").innerHTML=
+ "Mã vận đơn: <b>"+escapeHtml(order.tracking_code)+"</b><br>"+
+ "Người nhận: <b>"+escapeHtml(order.recipient)+"</b><br>"+
+ "Điểm đến: <b>"+escapeHtml(order.destination)+"</b><br>"+
+ "Ngày tạo: "+formatDate(order.created_at);
+ document.getElementById("currentStatus").textContent=progress.status;
+ let html="";
+ stages.forEach((stage,i)=>{
+  const day=i+1;
+  const done=day<progress.day;
+  const current=day===progress.day;
+  html+='<div class="step '+(done?"done ":"")+(current?"current":"")+'"><div class="dot"></div><div><strong>'+stage+'</strong><small>Ngày '+day+(done?" · Đã qua":current?" · Trạng thái hiện tại":" · Dự kiến")+'</small></div></div>';
+ });
+ if(progress.delayed){
+  html+='<div class="notice">Hành trình đang kéo dài hơn dự kiến. Vui lòng theo dõi bản mô phỏng để xem cập nhật tiếp theo.</div>';
+ }
+ document.getElementById("timeline").innerHTML=html;
+ document.getElementById("result").style.display="block";
+}
+function escapeHtml(value){
+ return String(value??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+async function login(){
+ const email=document.getElementById("email").value.trim();
+ const password=document.getElementById("password").value;
+ const error=document.getElementById("loginError");
+ error.textContent="";
+ const {error:err}=await db.auth.signInWithPassword({email,password});
+ if(err){error.textContent="Đăng nhập không thành công. Hãy kiểm tra email và mật khẩu.";return;}
+ document.getElementById("loginBox").classList.add("hidden");
+ document.getElementById("adminPanel").classList.remove("hidden");
+ loadOrders();
+}
+async function logout(){
+ await db.auth.signOut();
+ document.getElementById("loginBox").classList.remove("hidden");
+ document.getElementById("adminPanel").classList.add("hidden");
+}
+async function addOrder(){
+ const code=document.getElementById("newCode").value.trim();
+ const recipient=document.getElementById("newRecipient").value.trim();
  const destination=document.getElementById("newDestination").value.trim();
- const stage=Number(document.getElementById("newStage").value);
- if(!code||!name||!destination){alert("Vui lòng điền đầy đủ thông tin.");return}
- let orders=loadOrders();
- if(orders.some(o=>o.code===code)){alert("Mã vận đơn đã tồn tại.");return}
- orders.push({code,name,destination,stage,created:Date.now()});
- saveOrders(orders);
- ["newCode","newName","newDestination"].forEach(id=>document.getElementById(id).value="");
- renderOrders();
- alert("Đã thêm vận đơn mô phỏng.");
+ const error=document.getElementById("adminError");
+ const btn=document.getElementById("addBtn");
+ error.textContent="";
+ if(!code||!recipient||!destination){error.textContent="Vui lòng nhập đủ mã vận đơn, người nhận và điểm đến.";return;}
+ btn.disabled=true;
+ const {error:err}=await db.from("orders").insert({tracking_code:code,recipient,destination,status:"Đang xử lý"});
+ btn.disabled=false;
+ if(err){error.textContent=err.code==="23505"?"Mã vận đơn này đã tồn tại.":"Không thể thêm mã. Kiểm tra quyền quản trị và thử lại.";return;}
+ document.getElementById("newCode").value="";
+ document.getElementById("newRecipient").value="";
+ document.getElementById("newDestination").value="";
+ error.style.color="green";error.textContent="Đã thêm mã vận đơn.";
+ loadOrders();
 }
-function deleteOrder(code){
+async function loadOrders(){
+ const list=document.getElementById("orderList");
+ list.textContent="Đang tải...";
+ const {data,error}=await db.from("orders").select("id,tracking_code,recipient,destination,created_at").order("created_at",{ascending:false});
+ if(error){list.textContent="Không tải được danh sách. Kiểm tra quyền truy cập.";return;}
+ if(!data.length){list.textContent="Chưa có mã vận đơn nào.";return;}
+ list.innerHTML=data.map(o=>'<div class="orderitem"><div><b>'+escapeHtml(o.tracking_code)+'</b>'+escapeHtml(o.recipient)+' · '+escapeHtml(o.destination)+'</div><button class="danger" onclick="deleteOrder('+Number(o.id)+')">Xóa</button></div>').join("");
+}
+async function deleteOrder(id){
  if(!confirm("Bạn có chắc muốn xóa mã vận đơn này?"))return;
- saveOrders(loadOrders().filter(o=>o.code!==code));renderOrders();
+ const {error}=await db.from("orders").delete().eq("id",id);
+ if(error){alert("Không xóa được. Hãy kiểm tra quyền quản trị.");return;}
+ loadOrders();
 }
-function renderOrders(){
- const orders=loadOrders();
- document.getElementById("orderList").innerHTML=orders.map(o=>`
- <div class="admin-list"><b>${o.code}</b><br>${o.name} – ${o.destination}<br>
- <span class="muted">${stages[currentStage(o)][0]}</span><br>
- <button class="danger" style="margin-top:8px" onclick="deleteOrder('${o.code.replace(/'/g,"")}')">Xóa mã</button></div>`).join("")||"Chưa có vận đơn.";
-}
-init();
-document.getElementById("trackingInput").addEventListener("keydown",e=>{if(e.key==="Enter")trackOrder()});
+document.getElementById("tracking").addEventListener("keydown",e=>{if(e.key==="Enter")searchOrder();});
+showHome();
 </script>
 </body>
 </html>
